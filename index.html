@@ -521,10 +521,17 @@
         <input type="text" id="r-nombre" placeholder="¿Cómo te llamas?">
         <span class="msg">Escribe tu nombre.</span>
       </div>
-      <div class="field" id="f-contacto">
-        <label for="r-contacto">Correo o teléfono</label>
-        <input type="text" id="r-contacto" placeholder="Para confirmarte tu lugar">
-        <span class="msg">Déjanos un correo o teléfono.</span>
+      <div class="row2">
+        <div class="field" id="f-telefono">
+          <label for="r-telefono">Teléfono</label>
+          <input type="tel" id="r-telefono" placeholder="Tu número de contacto">
+          <span class="msg">Escribe tu teléfono.</span>
+        </div>
+        <div class="field" id="f-email">
+          <label for="r-email">Email</label>
+          <input type="email" id="r-email" placeholder="Tu correo electrónico">
+          <span class="msg">Escribe un email válido.</span>
+        </div>
       </div>
       <div class="row2">
         <div class="field" id="f-noche">
@@ -545,13 +552,15 @@
           <span class="msg">Indica cuántas personas.</span>
         </div>
       </div>
-      <div class="field">
-        <label for="r-fecha">Fecha preferida (opcional)</label>
+      <div class="field" id="f-fecha">
+        <label for="r-fecha">Fecha preferida</label>
         <input type="date" id="r-fecha">
+        <span class="msg">Elige una fecha.</span>
       </div>
-      <div class="field">
-        <label for="r-nota">¿Algo que debamos saber? (opcional)</label>
+      <div class="field" id="f-nota">
+        <label for="r-nota">¿Algo que debamos saber?</label>
         <textarea id="r-nota" placeholder="Alergias, una celebración especial, cualquier cosa..."></textarea>
+        <span class="msg">Cuéntanos algo, aunque sea breve.</span>
       </div>
       <button type="submit" class="form-submit">Reservar mi lugar</button>
       <p class="form-note">Al reservar te confirmamos aquí y te abrimos WhatsApp para reconfirmar tu pedido.</p>
@@ -640,33 +649,38 @@
   const CORREO_RESERVAS = "casaalbahacatx@gmail.com";
   const FORMSPREE_URL   = "https://formspree.io/f/xpqvpogk";
   function _collectReserva(){
-    const req=[['f-nombre','r-nombre'],['f-contacto','r-contacto'],['f-noche','r-noche'],['f-personas','r-personas']];
+    const req=[['f-nombre','r-nombre'],['f-telefono','r-telefono'],['f-email','r-email'],
+               ['f-noche','r-noche'],['f-personas','r-personas'],['f-fecha','r-fecha'],['f-nota','r-nota']];
     let ok=true, firstBad=null;
     req.forEach(([f,inp])=>{
       const field=document.getElementById(f); const val=document.getElementById(inp).value.trim();
-      if(!val){ field.classList.add('err'); ok=false; if(!firstBad)firstBad=document.getElementById(inp); }
+      let bad=!val;
+      if(inp==='r-email' && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) bad=true;
+      if(bad){ field.classList.add('err'); ok=false; if(!firstBad)firstBad=document.getElementById(inp); }
       else field.classList.remove('err');
     });
     if(!ok){ firstBad && firstBad.focus(); return null; }
     const g=id=>document.getElementById(id).value.trim();
     const data={
       "Nombre": g('r-nombre'),
-      "Contacto": g('r-contacto'),
+      "Teléfono": g('r-telefono'),
+      "Email": g('r-email'),
       "Noche": g('r-noche'),
       "Personas": g('r-personas'),
-      "Fecha preferida": g('r-fecha') || "—",
-      "Nota": g('r-nota') || "—",
+      "Fecha preferida": g('r-fecha'),
+      "Nota": g('r-nota'),
       "_subject": "Reserva Casa Albahaca — "+g('r-nombre')
     };
-    let lines=[
+    const lines=[
       "Hola Casa Albahaca 🌿 Quiero reservar mi lugar.",
       "Nombre: "+g('r-nombre'),
-      "Contacto: "+g('r-contacto'),
+      "Teléfono: "+g('r-telefono'),
+      "Email: "+g('r-email'),
       "Noche: "+g('r-noche'),
-      "Personas: "+g('r-personas')
+      "Personas: "+g('r-personas'),
+      "Fecha preferida: "+g('r-fecha'),
+      "Nota: "+g('r-nota')
     ];
-    if(g('r-fecha')) lines.push("Fecha preferida: "+g('r-fecha'));
-    if(g('r-nota'))  lines.push("Nota: "+g('r-nota'));
     return {text:lines.join("\n"), nombre:g('r-nombre'), data:data};
   }
   function reservarSubmit(e){
