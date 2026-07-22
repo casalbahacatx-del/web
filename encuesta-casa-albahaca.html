@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casa Albahaca — ¿Qué tipo de comensal eres?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Karla:wght@300;400;500;600;700&family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --olive:#8B9B6E; --green:#43502F; --gold:#D8BE7A; --terra:#C08A5E;
+    --cream:#F1E9D7; --cream-lt:#F8F3E7; --card:#FCFAF2; --ink:#3E3B2E; --line:#E2D7BB;
+    --display:'Fraunces',Georgia,serif; --body:'Karla',system-ui,sans-serif; --label:'Roboto Condensed',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:680px;margin:0 auto;padding:0 20px}
+  h1,h2,h3{font-family:var(--display);color:var(--green);font-weight:500;line-height:1.15}
+  .eyebrow{font-family:var(--label);text-transform:uppercase;letter-spacing:.26em;font-size:11.5px;
+    font-weight:500;color:var(--olive);display:block}
+
+  /* header */
+  header{background:var(--cream-lt);border-bottom:1px solid var(--line);padding:16px 0}
+  .brand{display:flex;align-items:center;justify-content:center;gap:9px;
+    font-family:var(--display);font-size:19px;font-weight:600;color:var(--green)}
+
+  /* progress */
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin:26px 0 34px}
+  .bar span{display:block;height:100%;width:0%;background:var(--olive);transition:width .45s ease}
+
+  main{padding:30px 0 70px}
+  .screen{display:none;animation:in .45s ease}
+  .screen.on{display:block}
+  @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  .intro{text-align:center;padding:14px 0 0}
+  .intro h1{font-size:clamp(30px,6vw,44px);margin:16px 0 14px}
+  .intro h1 em{font-style:italic;color:var(--olive)}
+  .intro p{color:#5b5641;font-size:16.5px;max-width:520px;margin:0 auto 8px}
+  .mini{font-size:13.5px;color:#8a836a;margin-top:14px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px 26px;margin-top:24px}
+
+  .q{margin-bottom:30px}
+  .q:last-of-type{margin-bottom:8px}
+  .q > h3{font-size:20px;margin-bottom:4px}
+  .q .hint{font-size:13.5px;color:#8a836a;margin-bottom:14px}
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt{display:flex;align-items:flex-start;gap:11px;padding:13px 15px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;cursor:pointer;transition:border-color .18s,background .18s}
+  .opt:hover{border-color:var(--olive)}
+  .opt input{margin-top:4px;accent-color:var(--olive);flex:0 0 auto}
+  .opt span{font-size:15px}
+  .opt.sel{border-color:var(--olive);background:#f7f8f2}
+
+  .field{margin-bottom:16px}
+  .field label{display:block;font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;
+    font-size:11.5px;color:var(--olive);margin-bottom:7px}
+  .field input,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;
+    font-family:var(--body);font-size:15px;color:var(--ink);background:#fff;outline:none;transition:border-color .2s}
+  .field input:focus,.field textarea:focus{border-color:var(--olive)}
+  .field textarea{resize:vertical;min-height:88px}
+  .field.err input,.field.err textarea{border-color:#B4553A;background:#fdf6f3}
+  .field .msg{display:none;color:#B4553A;font-size:12.5px;margin-top:5px}
+  .field.err .msg{display:block}
+  .q.err .opts{border-left:3px solid #B4553A;padding-left:11px}
+  .q .qmsg{display:none;color:#B4553A;font-size:12.5px;margin-top:8px}
+  .q.err .qmsg{display:block}
+
+  .nav{display:flex;gap:12px;margin-top:26px}
+  .btn{font-family:var(--label);text-transform:uppercase;letter-spacing:.14em;font-size:12.5px;font-weight:500;
+    padding:15px 26px;border-radius:6px;border:1px solid transparent;cursor:pointer;transition:all .2s;flex:1}
+  .btn-main{background:var(--green);color:var(--cream-lt)}
+  .btn-main:hover{background:#35401f}
+  .btn-back{background:transparent;border-color:var(--line);color:#8a836a;flex:0 0 auto;padding:15px 20px}
+  .btn-back:hover{border-color:var(--olive);color:var(--green)}
+
+  /* resultado */
+  .res{text-align:center}
+  .res .badge{width:74px;height:74px;border-radius:50%;margin:0 auto 20px;background:rgba(139,155,110,.16);
+    display:flex;align-items:center;justify-content:center;font-size:34px}
+  .res h2{font-size:clamp(26px,5vw,38px);margin:10px 0 6px}
+  .res h2 em{font-style:italic;color:var(--terra)}
+  .res .lede{color:#5b5641;font-size:16.5px;max-width:520px;margin:0 auto}
+  .res-block{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:26px 24px;margin-top:22px}
+  .res-block h4{font-family:var(--label);text-transform:uppercase;letter-spacing:.16em;font-size:11.5px;
+    color:var(--olive);margin-bottom:9px}
+  .res-block p{font-size:15.5px;color:var(--ink)}
+  .noche-tag{display:inline-block;margin-top:6px;font-family:var(--display);font-size:21px;color:var(--green);font-style:italic}
+  .cta{display:inline-block;margin-top:24px;text-decoration:none;font-family:var(--label);text-transform:uppercase;
+    letter-spacing:.14em;font-size:12.5px;padding:15px 32px;border-radius:6px;background:var(--gold);color:#3a2f12;font-weight:500}
+  .cta:hover{background:#e7ce8c}
+  .sending{font-size:13px;color:#8a836a;margin-top:16px}
+
+  footer{border-top:1px solid var(--line);background:var(--cream-lt);padding:24px 0;text-align:center}
+  footer p{font-size:12.5px;color:#8a836a}
+  footer .tag{font-family:var(--label);text-transform:uppercase;letter-spacing:.18em;font-size:11px;color:var(--olive)}
+  @media(prefers-reduced-motion:reduce){.screen{animation:none}.bar span{transition:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap brand">
+    <svg width="24" height="24" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+      <path d="M13 22V9" stroke="#8B9B6E" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M13 15c-3.4 0-5.6-1.6-6.4-4.4C9.6 10 12 11.6 13 15Z" fill="#8B9B6E"/>
+      <path d="M13 12c1-2.6 3.3-4 6-3.6C18.4 11 16 12.4 13 12Z" fill="#7A8B5E"/>
+      <circle cx="13" cy="6.6" r="1.9" fill="#D8BE7A"/>
+    </svg>
+    Casa Albahaca
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+
+  <!-- 0 · INTRO + DATOS -->
+  <section class="screen on" id="s0">
+    <div class="intro">
+      <span class="eyebrow">Antes de sentarte a la mesa</span>
+      <h1>¿Qué tipo de <em>comensal</em> eres?</h1>
+      <p>Cada persona llega a la mesa buscando algo distinto. Cuéntanos qué buscas tú y te decimos cuál es tu lugar en Casa Albahaca.</p>
+      <p class="mini">Son 3 minutos · 10 preguntas · Al final te decimos tu perfil</p>
+    </div>
+    <div class="card">
+      <div class="field" id="f-nombre">
+        <label for="nombre">Tu nombre</label>
+        <input type="text" id="nombre" placeholder="¿Cómo te llamas?">
+        <span class="msg">Escribe tu nombre.</span>
+      </div>
+      <div class="field" id="f-email">
+        <label for="email">Tu email</label>
+        <input type="email" id="email" placeholder="Para enviarte tu resultado y las próximas fechas">
+        <span class="msg">Escribe un email válido.</span>
+      </div>
+      <div class="field">
+        <label for="tel">Teléfono <span style="text-transform:none;letter-spacing:0;color:#8a836a">(opcional)</span></label>
+        <input type="tel" id="tel" placeholder="Por si prefieres que te escribamos por WhatsApp">
+      </div>
+      <div class="nav">
+        <button class="btn btn-main" onclick="next(0)">Empezar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 · MOTIVACIÓN -->
+  <section class="screen" id="s1">
+    <span class="eyebrow">Parte 1 de 3 · Lo que buscas</span>
+    <div class="card">
+
+      <div class="q" id="q1">
+        <h3>Imagina que ya estás sentada a la mesa de Casa Albahaca.</h3>
+        <p class="hint">¿Qué es lo que más te gustaría sentir esa noche?</p>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q1" value="Que por fin alguien me consienta a mí" data-p="cuidadora"><span>Que por fin alguien me consienta a mí</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Como si estuviera en casa de mi familia" data-p="nostalgica"><span>Como si estuviera en casa de mi familia</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Que hice amigas de verdad" data-p="tribu"><span>Que hice amigas de verdad</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Que aprendí algo nuevo y me sorprendí" data-p="curiosa"><span>Que aprendí algo nuevo y me sorprendí</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Que celebré algo importante como se merece" data-p="celebradora"><span>Que celebré algo importante como se merece</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="q" id="q2">
+        <h3>¿Qué es lo que más te falta en este momento de tu vida?</h3>
+        <p class="hint">Sé honesta, esto es entre nosotras.</p>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q2" value="Tiempo para mí, sin estar cuidando a nadie" data-p="cuidadora"><span>Tiempo para mí, sin estar cuidando a nadie</span></label>
+          <label class="opt"><input type="radio" name="q2" value="Raíces, algo que me recuerde de dónde vengo" data-p="nostalgica"><span>Raíces, algo que me recuerde de dónde vengo</span></label>
+          <label class="opt"><input type="radio" name="q2" value="Gente con quien contar de verdad" data-p="tribu"><span>Gente con quien contar de verdad</span></label>
+          <label class="opt"><input type="radio" name="q2" value="Emoción, salir de la rutina" data-p="curiosa"><span>Emoción, salir de la rutina</span></label>
+          <label class="opt"><input type="radio" name="q2" value="Momentos que valgan la pena recordar" data-p="celebradora"><span>Momentos que valgan la pena recordar</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="q" id="q3">
+        <h3>¿Qué es lo que más te llama de cocinar junto a otras personas?</h3>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q3" value="Hacer algo con mis manos" data-p="curiosa"><span>Hacer algo con mis manos</span></label>
+          <label class="opt"><input type="radio" name="q3" value="Las conversaciones que salen" data-p="tribu"><span>Las conversaciones que salen</span></label>
+          <label class="opt"><input type="radio" name="q3" value="Los sabores que me recuerdan a alguien" data-p="nostalgica"><span>Los sabores que me recuerdan a alguien</span></label>
+          <label class="opt"><input type="radio" name="q3" value="Que alguien más piense en todo por mí" data-p="cuidadora"><span>Que alguien más piense en todo por mí</span></label>
+          <label class="opt"><input type="radio" name="q3" value="Que sea algo distinto para una ocasión especial" data-p="celebradora"><span>Que sea algo distinto para una ocasión especial</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="q" id="q4">
+        <h3>Si vinieras a una noche, ¿cómo llegarías?</h3>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q4" value="Sola, y me encantaría conocer gente" data-p="tribu"><span>Sola, y me encantaría conocer gente</span></label>
+          <label class="opt"><input type="radio" name="q4" value="Con una amiga" data-p="tribu"><span>Con una amiga</span></label>
+          <label class="opt"><input type="radio" name="q4" value="Con mi pareja" data-p="celebradora"><span>Con mi pareja</span></label>
+          <label class="opt"><input type="radio" name="q4" value="Con mi familia" data-p="nostalgica"><span>Con mi familia</span></label>
+          <label class="opt"><input type="radio" name="q4" value="Con mi grupo, reservaría la mesa completa" data-p="celebradora"><span>Con mi grupo, reservaría la mesa completa</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" onclick="back(1)">Atrás</button>
+        <button class="btn btn-main" onclick="next(1)">Siguiente</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · PRÁCTICAS -->
+  <section class="screen" id="s2">
+    <span class="eyebrow">Parte 2 de 3 · Lo práctico</span>
+    <div class="card">
+
+      <div class="q" id="q5">
+        <h3>¿Qué te detendría para decir que sí a una noche así?</h3>
+        <p class="hint">Nos ayuda muchísimo saberlo.</p>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q5" value="No sé cocinar y me daría pena"><span>No sé cocinar y me daría pena</span></label>
+          <label class="opt"><input type="radio" name="q5" value="No tengo con quién ir"><span>No tengo con quién ir</span></label>
+          <label class="opt"><input type="radio" name="q5" value="El precio"><span>El precio</span></label>
+          <label class="opt"><input type="radio" name="q5" value="El tiempo, mi agenda está llena"><span>El tiempo, mi agenda está llena</span></label>
+          <label class="opt"><input type="radio" name="q5" value="Me da pena llegar donde no conozco a nadie"><span>Me da pena llegar donde no conozco a nadie</span></label>
+          <label class="opt"><input type="radio" name="q5" value="Nada, yo ya quiero ir"><span>Nada, yo ya quiero ir</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="q" id="q6">
+        <h3>¿Cuál de nuestras noches te llama más?</h3>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q6" value="Noche Italiana"><span><strong>Noche Italiana</strong> — bruschettas, raviolis y tiramisú para llevar</span></label>
+          <label class="opt"><input type="radio" name="q6" value="Noche Francesa"><span><strong>Noche Francesa</strong> — quiche, bourguignon y crème brûlée</span></label>
+          <label class="opt"><input type="radio" name="q6" value="Noche Mexicana"><span><strong>Noche Mexicana</strong> — quesadillas, fajitas y churros</span></label>
+          <label class="opt"><input type="radio" name="q6" value="Noche Mediterránea"><span><strong>Noche Mediterránea</strong> — ensalada griega, salmón y baklava</span></label>
+          <label class="opt"><input type="radio" name="q6" value="Todas, no sabría elegir"><span>Todas, no sabría elegir</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="q" id="q7">
+        <h3>¿Cuándo te quedaría mejor?</h3>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q7" value="Viernes por la noche"><span>Viernes por la noche</span></label>
+          <label class="opt"><input type="radio" name="q7" value="Sábado por la tarde"><span>Sábado por la tarde</span></label>
+          <label class="opt"><input type="radio" name="q7" value="Sábado por la noche"><span>Sábado por la noche</span></label>
+          <label class="opt"><input type="radio" name="q7" value="Domingo"><span>Domingo</span></label>
+          <label class="opt"><input type="radio" name="q7" value="Entre semana"><span>Entre semana</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="q" id="q8">
+        <h3>Por una experiencia de 3 horas con cena completa, ¿cuánto pagarías?</h3>
+        <p class="hint">Por persona.</p>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q8" value="Menos de $40"><span>Menos de $40</span></label>
+          <label class="opt"><input type="radio" name="q8" value="$40 a $60"><span>$40 a $60</span></label>
+          <label class="opt"><input type="radio" name="q8" value="$60 a $85"><span>$60 a $85</span></label>
+          <label class="opt"><input type="radio" name="q8" value="Más de $85, si la experiencia lo vale"><span>Más de $85, si la experiencia lo vale</span></label>
+        </div>
+        <span class="qmsg">Elige una opción.</span>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" onclick="back(2)">Atrás</button>
+        <button class="btn btn-main" onclick="next(2)">Siguiente</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · ABIERTAS -->
+  <section class="screen" id="s3">
+    <span class="eyebrow">Parte 3 de 3 · En tus palabras</span>
+    <div class="card">
+      <div class="field" id="f-a1">
+        <label for="a1">¿Qué te haría sentir verdaderamente bienvenida en una mesa?</label>
+        <textarea id="a1" placeholder="Lo primero que se te venga a la mente..."></textarea>
+        <span class="msg">Cuéntanos, aunque sea en pocas palabras.</span>
+      </div>
+      <div class="field" id="f-a2">
+        <label for="a2">Si pudieras pedir una noche hecha a tu medida, ¿cómo sería?</label>
+        <textarea id="a2" placeholder="La comida, la gente, el ambiente, lo que sea..."></textarea>
+        <span class="msg">Cuéntanos, aunque sea en pocas palabras.</span>
+      </div>
+      <div class="field">
+        <label for="a3">¿Hay algo más que quieras decirnos? <span style="text-transform:none;letter-spacing:0;color:#8a836a">(opcional)</span></label>
+        <textarea id="a3" placeholder="Te leemos..."></textarea>
+      </div>
+      <div class="nav">
+        <button class="btn btn-back" onclick="back(3)">Atrás</button>
+        <button class="btn btn-main" onclick="finish()">Ver mi resultado</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · RESULTADO -->
+  <section class="screen" id="s4">
+    <div class="res">
+      <div class="badge" id="r-emoji">🌿</div>
+      <span class="eyebrow">Tu lugar en la mesa</span>
+      <h2 id="r-title">Eres <em>La Nostálgica</em></h2>
+      <p class="lede" id="r-lede"></p>
+
+      <div class="res-block">
+        <h4>Lo que buscas de verdad</h4>
+        <p id="r-busca"></p>
+      </div>
+      <div class="res-block">
+        <h4>Tu noche en Casa Albahaca</h4>
+        <span class="noche-tag" id="r-noche"></span>
+        <p id="r-noche-why" style="margin-top:6px"></p>
+      </div>
+      <div class="res-block">
+        <h4>Nuestra promesa para ti</h4>
+        <p id="r-promesa"></p>
+      </div>
+
+      <a class="cta" id="r-cta" href="#" target="_blank" rel="noopener">Reservar mi lugar</a>
+      <p class="sending" id="r-status">Guardando tus respuestas…</p>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="tag">Casa Albahaca</span>
+    <p style="margin-top:5px">Buena comida, buenos momentos, buena compañía.</p>
+  </div>
+</footer>
+
+<script>
+  /* ====== CONFIGURACIÓN — cambia solo estas líneas ====== */
+  const FORMSPREE_URL   = "https://formspree.io/f/xpqvpogk";
+  const WHATSAPP_NUMERO = "13462453923";
+  /* ===================================================== */
+
+  const PERFILES = {
+    nostalgica:{
+      emoji:"🏡", nombre:"La Nostálgica",
+      lede:"Tú no buscas un restaurante. Buscas volver a una casa que quizá dejaste atrás.",
+      busca:"Buscas el sabor que te devuelve a alguien: la cocina de tu madre, de tu abuela, de tu tierra. Cuando comes algo que reconoces, no es el plato lo que te emociona — es el recuerdo. Y en una ciudad que no siempre se siente propia, eso vale más que cualquier menú.",
+      noche:"Noche Mexicana — “Fuego y Maíz”",
+      why:"Es la más comunal y la más de tierra: el molcajete, las tortillas que pasan de mano en mano y las salsas al centro. Sabe a casa de familia.",
+      promesa:"Aquí la mesa se pone como en casa: todo al centro, para compartir. No vas a ser una clienta. Vas a ser de la familia por una noche."
+    },
+    cuidadora:{
+      emoji:"🕯️", nombre:"La Que Siempre Da",
+      lede:"Tú cuidas a todos. Esta vez, te toca que te cuiden a ti.",
+      busca:"Eres la que organiza, la que cocina, la que se acuerda de los cumpleaños. Y casi nunca te sientas a que alguien piense en ti. Lo que buscas no es aprender una receta: es soltar el mando por tres horas y dejar que otra persona sostenga el espacio.",
+      noche:"Noche Mediterránea — “Mezze bajo el Olivo”",
+      why:"Es la más ligera y luminosa: aromas de limón y hierbas, todo servido en fuentes al centro, sin prisa. Y te vas con tu bandejita de baklava, hecha por ti, para ti.",
+      promesa:"Aquí no tienes que hacerte cargo de nada. Llega con las manos vacías y el corazón ocupado; nosotros nos encargamos del resto."
+    },
+    tribu:{
+      emoji:"🤍", nombre:"La Que Busca Su Gente",
+      lede:"No vienes por la comida. Vienes por la conversación que sale mientras se cocina.",
+      busca:"Quizá te mudaste, quizá tus amistades cambiaron, o quizá tienes mucha gente alrededor pero pocas conversaciones de verdad. Buscas una mesa donde no haya que fingir, donde puedas llegar sola y salir acompañada.",
+      noche:"Noche Italiana — “Aroma de Albahaca”",
+      why:"Sellar raviolis con las manos junto a otras personas rompe el hielo como ninguna otra cosa. Para cuando se sientan a comer, ya no son extrañas.",
+      promesa:"Nuestras mesas son de 10 a 12 personas para que nadie sea un número. Si llegas sola, no te vas a sentir sola. Ese es el punto."
+    },
+    curiosa:{
+      emoji:"✨", nombre:"La Curiosa",
+      lede:"Te aburre lo de siempre. Buscas algo que te haga sentir despierta.",
+      busca:"Te gusta hacer, probar, aprender con las manos. No quieres otra cena más ni otro plan predecible: quieres salir de ahí sabiendo algo que no sabías y con la satisfacción de haberlo hecho tú misma.",
+      noche:"Noche Francesa — “Mesa de la Provenza”",
+      why:"Es la más elegante y la que más técnica tiene: estirar la masa de la quiche y caramelizar tu propia crème brûlée con soplete. Ese “crack” de la cuchara es tuyo.",
+      promesa:"Aquí cocinas de verdad, con tus manos. Pero sin presión y sin perfección: lo que importa no es que quede impecable, sino que sea tuyo."
+    },
+    celebradora:{
+      emoji:"🥂", nombre:"La Celebradora",
+      lede:"Para ti, los momentos importantes merecen algo más que una reservación cualquiera.",
+      busca:"Buscas marcar las ocasiones: un cumpleaños, un reencuentro, un logro, o simplemente el gusto de reunir a los tuyos. No quieres un lugar ruidoso donde nadie se escucha — quieres una mesa donde la celebración se sienta íntima y de verdad.",
+      noche:"Cualquiera, con la mesa reservada solo para los tuyos",
+      why:"Podemos preparar una noche completa para tu grupo: tú eliges la cocina y nosotros creamos la experiencia alrededor de tu ocasión.",
+      promesa:"Aquí la celebración no se ve, se vive. Cocinan juntos, comen lo que hicieron y se quedan a la sobremesa — que es donde de verdad pasan las cosas."
+    }
+  };
+
+  const NOCHE_ELEGIDA = {
+    "Noche Italiana":"Noche Italiana — “Aroma de Albahaca”",
+    "Noche Francesa":"Noche Francesa — “Mesa de la Provenza”",
+    "Noche Mexicana":"Noche Mexicana — “Fuego y Maíz”",
+    "Noche Mediterránea":"Noche Mediterránea — “Mezze bajo el Olivo”"
+  };
+
+  let paso = 0;
+  const TOTAL = 4;
+
+  function show(n){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+    document.getElementById('s'+n).classList.add('on');
+    document.getElementById('bar').style.width = Math.round((n/TOTAL)*100)+'%';
+    paso = n;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function back(n){ show(n-1); }
+
+  function val(id){ return document.getElementById(id).value.trim(); }
+  function radio(name){
+    const el=document.querySelector('input[name="'+name+'"]:checked');
+    return el ? {value:el.value, p:el.dataset.p||null} : null;
+  }
+  function markField(id, bad){
+    document.getElementById(id).classList.toggle('err', bad);
+  }
+  function markQ(id, bad){
+    document.getElementById(id).classList.toggle('err', bad);
+  }
+
+  function next(from){
+    let ok=true, first=null;
+    if(from===0){
+      const n=!val('nombre');
+      markField('f-nombre', n); if(n){ok=false; first='nombre';}
+      const e=val('email');
+      const bad=!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+      markField('f-email', bad); if(bad){ok=false; if(!first)first='email';}
+    }
+    if(from===1){
+      ['q1','q2','q3','q4'].forEach(q=>{
+        const bad=!radio(q); markQ(q,bad); if(bad){ok=false; if(!first)first=q;}
+      });
+    }
+    if(from===2){
+      ['q5','q6','q7','q8'].forEach(q=>{
+        const bad=!radio(q); markQ(q,bad); if(bad){ok=false; if(!first)first=q;}
+      });
+    }
+    if(!ok){
+      const el=document.getElementById(first);
+      el && el.scrollIntoView({behavior:'smooth',block:'center'});
+      if(el && el.tagName==='INPUT') el.focus();
+      return;
+    }
+    show(from+1);
+  }
+
+  function finish(){
+    let ok=true, first=null;
+    const a1=!val('a1'); markField('f-a1',a1); if(a1){ok=false; first='f-a1';}
+    const a2=!val('a2'); markField('f-a2',a2); if(a2){ok=false; if(!first)first='f-a2';}
+    if(!ok){ document.getElementById(first).scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+    // ---- calcular perfil ----
+    const puntos={nostalgica:0,cuidadora:0,tribu:0,curiosa:0,celebradora:0};
+    ['q1','q2','q3','q4'].forEach(q=>{
+      const r=radio(q); if(r && r.p) puntos[r.p]++;
+    });
+    let key='tribu', max=-1;
+    // q1 pesa doble: es la pregunta más reveladora
+    const r1=radio('q1'); if(r1 && r1.p) puntos[r1.p]++;
+    for(const k in puntos){ if(puntos[k]>max){ max=puntos[k]; key=k; } }
+    const P=PERFILES[key];
+
+    // ---- pintar resultado ----
+    document.getElementById('r-emoji').textContent=P.emoji;
+    document.getElementById('r-title').innerHTML='Eres <em>'+P.nombre+'</em>';
+    document.getElementById('r-lede').textContent=P.lede;
+    document.getElementById('r-busca').textContent=P.busca;
+    document.getElementById('r-promesa').textContent=P.promesa;
+
+    const elegida=radio('q6').value;
+    if(NOCHE_ELEGIDA[elegida] && key!=='celebradora'){
+      document.getElementById('r-noche').textContent=NOCHE_ELEGIDA[elegida];
+      document.getElementById('r-noche-why').textContent="La elegiste tú, y le va perfecto a tu perfil. Te avisamos en cuanto abramos fecha.";
+    } else {
+      document.getElementById('r-noche').textContent=P.noche;
+      document.getElementById('r-noche-why').textContent=P.why;
+    }
+
+    const nombre=val('nombre');
+    const msg="Hola Casa Albahaca 🌿 Hice la encuesta y salí "+P.nombre+". Me gustaría saber de las próximas fechas.\nNombre: "+nombre;
+    document.getElementById('r-cta').href="https://wa.me/"+WHATSAPP_NUMERO+"?text="+encodeURIComponent(msg);
+
+    show(4);
+
+    // ---- enviar a Formspree ----
+    const data={
+      "_subject":"Encuesta Casa Albahaca — "+nombre+" ("+P.nombre+")",
+      "PERFIL":P.nombre,
+      "Nombre":nombre,
+      "Email":val('email'),
+      "Teléfono":val('tel')||"—",
+      "1. Qué le gustaría sentir":radio('q1').value,
+      "2. Qué le falta en su vida":radio('q2').value,
+      "3. Qué le llama de cocinar en grupo":radio('q3').value,
+      "4. Cómo llegaría":radio('q4').value,
+      "5. OBJECIÓN — qué la detiene":radio('q5').value,
+      "6. Noche preferida":radio('q6').value,
+      "7. Cuándo le queda mejor":radio('q7').value,
+      "8. PRECIO que pagaría":radio('q8').value,
+      "9. Qué la haría sentir bienvenida":val('a1'),
+      "10. Su noche a la medida":val('a2'),
+      "11. Algo más":val('a3')||"—",
+      "Puntajes":JSON.stringify(puntos)
+    };
+    fetch(FORMSPREE_URL,{
+      method:"POST",
+      headers:{"Accept":"application/json","Content-Type":"application/json"},
+      body:JSON.stringify(data)
+    }).then(function(res){
+      document.getElementById('r-status').textContent = res.ok
+        ? "✓ Recibimos tus respuestas. Te escribimos pronto."
+        : "Guardamos tu resultado. Si quieres, escríbenos por WhatsApp.";
+    }).catch(function(){
+      document.getElementById('r-status').textContent="No pudimos guardar tus respuestas. Escríbenos por WhatsApp y con gusto te atendemos.";
+    });
+  }
+
+  // resaltar opción seleccionada
+  document.addEventListener('change', function(e){
+    if(e.target.type==='radio'){
+      document.querySelectorAll('input[name="'+e.target.name+'"]').forEach(function(i){
+        i.closest('.opt').classList.toggle('sel', i.checked);
+      });
+      const q=e.target.closest('.q'); if(q) q.classList.remove('err');
+    }
+  });
+  document.getElementById('bar').style.width='0%';
+</script>
+</body>
+</html>
