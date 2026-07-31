@@ -247,6 +247,25 @@
   .btn-wa:hover{background:#35401f}
   .ok-again{display:block;margin:16px auto 0;background:none;border:0;cursor:pointer;
     font-family:var(--body);font-size:13px;color:var(--olive);text-decoration:underline}
+
+  .noche-pay{display:block;width:100%;text-align:center;margin-top:16px;padding:13px;border-radius:6px;border:0;cursor:pointer;
+    background:var(--green);color:var(--cream-lt);text-decoration:none;
+    font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;font-size:12.5px;font-weight:500;
+    transition:background .2s}
+  .noche-pay:hover{background:#35401f}
+  .noche-pay:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+
+  .btn-pay{display:inline-block;font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;
+    font-size:13px;font-weight:500;text-decoration:none;padding:16px 30px;border-radius:6px;
+    background:var(--gold);color:#3a2f12;transition:background .2s}
+  .btn-pay:hover{background:#e7ce8c}
+  #ok-pay-multi{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .btn-pay-mini{flex:1 1 40%;min-width:130px;text-decoration:none;font-family:var(--label);
+    text-transform:uppercase;letter-spacing:.1em;font-size:12px;font-weight:500;padding:13px;border-radius:6px;
+    background:var(--gold);color:#3a2f12;transition:background .2s}
+  .btn-pay-mini:hover{background:#e7ce8c}
+  .ok-or{font-size:13.5px;color:#8a836a;margin-top:18px}
+  .ok-or a{color:var(--green);font-weight:600}
 </style>
 </head>
 <body>
@@ -368,6 +387,7 @@
           <div class="course"><span class="role">Dulce</span><span class="dish">Tiramisú para llevar</span></div>
         </div>
         <div class="foot"><span class="dot"></span> Mesa de 10–12 · Sábados&nbsp;&nbsp;·&nbsp;&nbsp;Toca para ver el menú</div>
+        <button class="noche-pay" type="button" onclick="event.stopPropagation();reservarNoche('Noche Italiana')">Reservar esta noche</button>
       </article>
 
       <!-- Francesa -->
@@ -393,6 +413,7 @@
           <div class="course"><span class="role">Dulce</span><span class="dish">Crème brûlée de vainilla con caramelo crujiente</span></div>
         </div>
         <div class="foot"><span class="dot"></span> Mesa de 10–12 · Sábados&nbsp;&nbsp;·&nbsp;&nbsp;Toca para ver el menú</div>
+        <button class="noche-pay" type="button" onclick="event.stopPropagation();reservarNoche('Noche Francesa')">Reservar esta noche</button>
       </article>
 
       <!-- Mexicana -->
@@ -415,6 +436,7 @@
           <div class="course"><span class="role">Dulce</span><span class="dish">Churros con chocolate caliente</span></div>
         </div>
         <div class="foot"><span class="dot"></span> Mesa de 10–12 · Sábados&nbsp;&nbsp;·&nbsp;&nbsp;Toca para ver el menú</div>
+        <button class="noche-pay" type="button" onclick="event.stopPropagation();reservarNoche('Noche Mexicana')">Reservar esta noche</button>
       </article>
 
       <!-- Mediterránea -->
@@ -439,6 +461,7 @@
           <div class="course"><span class="role">Dulce</span><span class="dish">Baklava de nueces y pistachos con miel y agua de azahar</span></div>
         </div>
         <div class="foot"><span class="dot"></span> Mesa de 10–12 · Sábados&nbsp;&nbsp;·&nbsp;&nbsp;Toca para ver el menú</div>
+        <button class="noche-pay" type="button" onclick="event.stopPropagation();reservarNoche('Noche Mediterránea')">Reservar esta noche</button>
       </article>
 
     </div>
@@ -563,14 +586,21 @@
         <span class="msg">Cuéntanos algo, aunque sea breve.</span>
       </div>
       <button type="submit" class="form-submit">Reservar mi lugar</button>
-      <p class="form-note">Al reservar te confirmamos aquí y te abrimos WhatsApp para reconfirmar tu pedido.</p>
+      <p class="form-note">Guardamos tus datos y te llevamos al pago para asegurar tu lugar.</p>
     </form>
 
     <div class="reserva-ok" id="reserva-ok" hidden>
       <div class="ok-badge">🌿</div>
-      <h3>¡Gracias! Ya tomamos tu reserva.</h3>
-      <p>Enviamos tu reserva a Casa Albahaca. Te abrimos WhatsApp para <strong>reconfirmar tu pedido</strong>; si no se abrió solo, tócalo aquí:</p>
-      <a class="btn-wa" id="ok-wa" href="#" target="_blank" rel="noopener">Reconfirmar por WhatsApp</a>
+      <h3>¡Gracias, <span id="ok-nombre">!</span></h3>
+      <p id="ok-msg">Guardamos tus datos. Para <strong>asegurar tu lugar</strong>, completa tu pago — es rápido y seguro.</p>
+      <a class="btn-pay" id="ok-pay" href="#" target="_blank" rel="noopener">Pagar mi lugar · $65</a>
+      <div id="ok-pay-multi" hidden>
+        <a class="btn-pay-mini" data-n="Noche Italiana" href="#" target="_blank" rel="noopener">Italiana</a>
+        <a class="btn-pay-mini" data-n="Noche Francesa" href="#" target="_blank" rel="noopener">Francesa</a>
+        <a class="btn-pay-mini" data-n="Noche Mexicana" href="#" target="_blank" rel="noopener">Mexicana</a>
+        <a class="btn-pay-mini" data-n="Noche Mediterránea" href="#" target="_blank" rel="noopener">Mediterránea</a>
+      </div>
+      <p class="ok-or">¿Prefieres preguntar antes de pagar? <a id="ok-wa" href="#" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
       <button type="button" class="ok-again" onclick="reservaReset()">Hacer otra reserva</button>
     </div>
   </div>
@@ -648,6 +678,13 @@
   const WHATSAPP_NUMERO = "13462453923";
   const CORREO_RESERVAS = "casaalbahacatx@gmail.com";
   const FORMSPREE_URL   = "https://formspree.io/f/xpqvpogk";
+  // Enlaces de pago de Stripe, uno por noche:
+  const PAGOS = {
+    "Noche Italiana":     "https://buy.stripe.com/dRm3cx2uK6PJ9ao94i5c403",
+    "Noche Francesa":     "https://buy.stripe.com/7sY6oJ8T8a1V2M0bcq5c402",
+    "Noche Mexicana":     "https://buy.stripe.com/8x26oJfhwde73Q43JY5c401",
+    "Noche Mediterránea": "https://buy.stripe.com/dRmeVf4CS8XRdqEbcq5c400"
+  };
   function _collectReserva(){
     const req=[['f-nombre','r-nombre'],['f-telefono','r-telefono'],['f-email','r-email'],
                ['f-noche','r-noche'],['f-personas','r-personas'],['f-fecha','r-fecha'],['f-nota','r-nota']];
@@ -686,24 +723,43 @@
   function reservarSubmit(e){
     e.preventDefault();
     const r=_collectReserva(); if(!r) return false;
+    const noche=document.getElementById('r-noche').value.trim();
     const waUrl="https://wa.me/"+WHATSAPP_NUMERO+"?text="+encodeURIComponent(r.text);
-    // 1) confirmación en pantalla
-    document.getElementById('reserva-form').hidden=true;
-    const ok=document.getElementById('reserva-ok');
-    document.getElementById('ok-wa').href=waUrl;
-    ok.hidden=false;
-    ok.scrollIntoView({behavior:'smooth',block:'center'});
-    // 2) abrir WhatsApp para reconfirmar
-    window.open(waUrl,"_blank");
-    // 3) enviar la reserva al correo (automático vía Formspree)
+
+    // 1) guardar los datos (automático vía Formspree; respaldo por correo)
     fetch(FORMSPREE_URL,{
       method:"POST",
       headers:{"Accept":"application/json","Content-Type":"application/json"},
       body:JSON.stringify(r.data)
     }).catch(function(){
-      // respaldo: si algo falla, abrir el correo prellenado
       window.location.href="mailto:"+CORREO_RESERVAS+"?subject="+encodeURIComponent(r.data._subject)+"&body="+encodeURIComponent(r.text);
     });
+
+    // 2) preparar el panel de pago
+    document.getElementById('ok-nombre').innerHTML = r.nombre + "!";
+    document.getElementById('ok-wa').href = waUrl;
+    const pagoUnico=document.getElementById('ok-pay');
+    const pagoMulti=document.getElementById('ok-pay-multi');
+    const msg=document.getElementById('ok-msg');
+    if(PAGOS[noche]){
+      pagoUnico.href=PAGOS[noche];
+      pagoUnico.textContent="Pagar mi lugar · $65 · "+noche;
+      pagoUnico.hidden=false; pagoMulti.hidden=true;
+      msg.innerHTML="Guardamos tus datos. Para <strong>asegurar tu lugar</strong> en la "+noche+", completa tu pago — es rápido y seguro.";
+    } else {
+      // "Aún no lo sé": mostrar las cuatro opciones de pago
+      pagoUnico.hidden=true; pagoMulti.hidden=false;
+      document.querySelectorAll('#ok-pay-multi .btn-pay-mini').forEach(function(a){
+        a.href=PAGOS[a.dataset.n]||"#";
+      });
+      msg.innerHTML="Guardamos tus datos. Elige la noche que quieres para <strong>completar tu pago</strong> y asegurar tu lugar:";
+    }
+
+    // 3) mostrar confirmación
+    document.getElementById('reserva-form').hidden=true;
+    const ok=document.getElementById('reserva-ok');
+    ok.hidden=false;
+    ok.scrollIntoView({behavior:'smooth',block:'center'});
     return false;
   }
   function reservaReset(){
@@ -712,11 +768,15 @@
     f.reset(); f.hidden=false;
     f.scrollIntoView({behavior:'smooth',block:'center'});
   }
-  function reservaReset(){
-    document.getElementById('reserva-ok').hidden=true;
+  // Botón "Reservar esta noche" de cada tarjeta: preselecciona y va al formulario
+  function reservarNoche(noche){
+    const sel=document.getElementById('r-noche');
+    if(sel){ sel.value=noche; }
     const f=document.getElementById('reserva-form');
-    f.reset(); f.hidden=false;
-    f.scrollIntoView({behavior:'smooth',block:'center'});
+    if(f){ f.hidden=false; }
+    document.getElementById('reserva-ok').hidden=true;
+    document.getElementById('reservar').scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(function(){ const n=document.getElementById('r-nombre'); n&&n.focus(); },500);
   }
 </script>
 </body>
